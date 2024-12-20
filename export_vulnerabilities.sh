@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Extracts all vulnerabilities from a SonarQube server
+# tested on SonarQube v9.9
+# Prerequisite: jq library needs to be installed 
+
 # Set your SonarQube server URL and authentication token
 SONARQUBE_URL="http://localhost:9000"
 AUTH_TOKEN="" # must by user token with administer permission
