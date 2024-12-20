@@ -1,18 +1,18 @@
 #!/bin/bash
 
+# Set your SonarQube server URL and authentication token
+SONARQUBE_URL="http://localhost:9000"
+AUTH_TOKEN=""
+
 # Extracts all vulnerabilities from a SonarQube server
 # tested on SonarQube v9.9
 # Prerequisite: jq library needs to be installed 
-
-# Set your SonarQube server URL and authentication token
-SONARQUBE_URL="http://localhost:9000"
-AUTH_TOKEN="" # must by user token with administer permission
 
 # Output CSV file
 OUTPUT_FILE="vulnerabilities.csv"
 
 # Write CSV header
-echo "projectKey,branch,path,message,ruleReference,severity" > "$OUTPUT_FILE"
+echo "projectKey,branch,path,message,ruleReference,severity,status,updatedAt" > "$OUTPUT_FILE"
 
 # Initialize pagination variables
 page=1
@@ -52,7 +52,7 @@ while [ $page -le $total_projects ]; do
         fi
 
         # Extract vulnerability findings using jq
-        vulnerabilities=$(echo "$findings_response" | jq -c '.export_findings[] | select(.type == "VULNERABILITY") | {projectKey, branch, path, message, ruleReference, severity}')
+        vulnerabilities=$(echo "$findings_response" | jq -c '.export_findings[] | select(.type == "VULNERABILITY") | {projectKey, branch, path, message, ruleReference, severity, status, updatedAt}')
 
         # Check if jq command was successful
         if [ $? -ne 0 ]; then
@@ -71,9 +71,11 @@ while [ $page -le $total_projects ]; do
                 message=$(echo "$vulnerability" | jq -r '.message')
                 ruleReference=$(echo "$vulnerability" | jq -r '.ruleReference')
                 severity=$(echo "$vulnerability" | jq -r '.severity')
+                status=$(echo "$vulnerability" | jq -r '.status')
+                updatedAt=$(echo "$vulnerability" | jq -r '.updatedAt')
 
                 # Append to CSV file
-                echo "$projectKey,$branch,$path,$message,$ruleReference,$severity" >> "$OUTPUT_FILE"
+                echo "$projectKey,$branch,$path,$message,$ruleReference,$severity,$status,$updatedAt" >> "$OUTPUT_FILE"
             done
         fi
     done
