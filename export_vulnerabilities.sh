@@ -2,7 +2,7 @@
 
 # Set your SonarQube server URL and authentication token
 SONARQUBE_URL="http://localhost:9000"
-AUTH_TOKEN=""
+AUTH_TOKEN="" # requires a token from a user with Administer permissions
 
 # Extracts all vulnerabilities from a SonarQube server
 # tested on SonarQube v9.9
